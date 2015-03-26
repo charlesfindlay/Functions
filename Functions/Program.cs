@@ -20,25 +20,36 @@ namespace Functions
             Console.Write("Enter the amount of the expense: ");
             decimal expense = decimal.Parse(Console.ReadLine());
 
-
-            // Probalby enclose in a do - while loop
             int decisionLevel = 0;
-            int managerCap = caps[decisionLevel];
-            string managerRule = rules[decisionLevel];
+            string disposition = null;
+            do
+            {
+                if (decisionLevel == 3)
+                {
+                    disposition = "Approved";
+                    PrintDecision(decisionLevel, disposition);
+                    break;
+                }
+                int managerCap = caps[decisionLevel];
+                string managerRule = rules[decisionLevel];
+
+                bool expenseCheck = CanApprove(expense, managerCap);
+                bool ruleCheck = AgainstRules(managerRule, description);
+                if (decisionLevel == 2 && ruleCheck == false && expense <= 5000)
+                    ruleCheck = true;
+
+
+                disposition = ManagerLevelDisposition(expenseCheck, ruleCheck);
+                PrintDecision(decisionLevel, disposition);
+                decisionLevel += 1;
+
+            } while (disposition == "Escalated");
             
 
 
         }
 
         
-        enum level
-        {
-            first,
-            second,
-            director,
-            ceo
-        }
-
         public static bool CanApprove(decimal expense, int managerCap)
         {
             return (expense <= managerCap) ? true : false;
@@ -55,6 +66,38 @@ namespace Functions
           
         }
 
+        public static string ManagerLevelDisposition(bool expenseCheck, bool ruleCheck)
+        {
+            if (ruleCheck == false)
+                return "Rejected";
+            else if (expenseCheck == true)
+                return "Approved";
+            else
+                return "Escalated";
+        }
+
+        public static void PrintDecision(int decisionLevel, string disposition)
+        {
+            switch (decisionLevel)
+            {
+                case (0):                                    
+                    Console.WriteLine("The first level manager has {0} your expense", disposition);
+                    return;                    
+                case (1):
+                    Console.WriteLine("The second level manager has {0} your expense", disposition);
+                    return;
+                case (2):
+                    Console.WriteLine("The director has {0} your expense", disposition);
+                    return;
+                case (3):
+                    Console.WriteLine("The CEO has {0} your expense", disposition);
+                    return;
+            }
+        }
+
+
+
 
     }
 }
+ 
